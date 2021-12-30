@@ -78,13 +78,6 @@ WSGI_APPLICATION = "utils.wsgi.application"
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'djongo',
-    #     'NAME': 'tagsquare',
-    #     'ENFORCE_SCHEMA': False,
-    #     'HOST': '127.0.0.1',
-    #     'PORT': 27017,
-    # }}
     "default": {
         "ENGINE": "djongo",
         "NAME": "finalteststore1",

@@ -10,7 +10,7 @@ from app.models import (
     cameraService,
     cameraInfo,
     groundplot,
-)  
+)
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework import status
@@ -21,13 +21,13 @@ from app.serializers import (
     cameraServiceserializers,
     cameraInfoserializers,
     groundplotserializers,
-)  
+)
+
 
 @csrf_exempt
 @api_view(["GET", "DELETE"])
 def all_(request):
     tutorial_data = JSONParser().parse(request)
-    # mail=tutorial_data['locationId']
     if request.method == "GET":
         try:
             a = {}
@@ -38,7 +38,7 @@ def all_(request):
                 if ground:
                     a.update({"groundplot": ground[0]})
             except:
-                pass 
+                pass
             store = storeFloorPlan.objects.filter(
                 locationId=tutorial_data["locationId"]
             ).values()
@@ -110,44 +110,7 @@ def all_(request):
                 cart = cartManager.objects.filter(
                     locationId=tutorial_data["locationId"]
                 ).delete()
-                """
-                try:
-                    ground1 = groundplot.objects.filter(locationId=tutorial_data['locationId']).values()
-                    if ground1:
-                        ground = groundplot.objects.filter(locationId=tutorial_data['locationId']).delete()
-                except:
-                    pass
-                try:
-                    store1 = storeFloorPlan.objects.filter(locationId=tutorial_data['locationId']).values()
-                    if store1:
-                        store = storeFloorPlan.objects.filter(locationId=tutorial_data['locationId']).delete()
-                except:
-                    pass        
-                try:
-                    camS = cameraService.objects.filter(locationId=tutorial_data['locationId']).values()
-                    if camS:
-                        camS = cameraService.objects.filter(locationId=tutorial_data['locationId']).delete()
-                except:
-                    pass
-                try:
-                    camI = cameraInfo.objects.filter(locationId=tutorial_data['locationId']).values()
-                    if camI:
-                        camI = cameraInfo.objects.filter(locationId=tutorial_data['locationId']).delete()
-                except:
-                    pass
-                try:
-                    she1 = storeFixtures.objects.filter(locationId=tutorial_data['locationId']).values()
-                    if she1:
-                        she = storeFixtures.objects.filter(locationId=tutorial_data['locationId']).delete()
-                except:
-                    pass
-                try:
-                    cart = cartManager.objects.filter(locationId=tutorial_data['locationId']).values()
-                    if cart:
-                        cart = cartManager.objects.filter(locationId=tutorial_data['locationId']).delete()
-                except:
-                    pass
-                """
+                
             response = {tutorial_data["locationId"]: "deleted"}
             c = json.loads(json_util.dumps(response))
             return JsonResponse(c, safe=False)
@@ -165,7 +128,6 @@ def storeFloorPlan_(request):
         a = storeFloorPlan.objects.filter(
             locationId=tutorial_data["locationId"]
         ).values()
-        # b = a[0]
         if a:
             location = storeFloorPlan.objects.get(
                 locationId=tutorial_data["locationId"]
@@ -181,7 +143,6 @@ def storeFloorPlan_(request):
             )
         else:
             tutorial_serializer = storeFloorPlanserializers(data=tutorial_data)
-            # c = json.loads(json_util.dumps(tutorial_data))
             if tutorial_serializer.is_valid():
                 tutorial_serializer.save()
                 return JsonResponse(c, status=status.HTTP_201_CREATED)
@@ -198,7 +159,6 @@ def storeFixtures_(request):
         a = storeFixtures.objects.filter(
             locationId=tutorial_data["locationId"]
         ).values()
-        # b = a[0]
         if a:
             shelve = storeFixtures.objects.get(locationId=tutorial_data["locationId"])
             tutorial_serializer = storeFixturesserializers(shelve, data=tutorial_data)
@@ -228,18 +188,16 @@ def groundplot_(request):
     if request.method == "PUT":
         tutorial_data = JSONParser().parse(request)
         a = groundplot.objects.filter(locationId=tutorial_data["locationId"]).values()
-        aa = json.loads(json_util.dumps(tutorial_data))  # b = a[0]
+        aa = json.loads(json_util.dumps(tutorial_data))
         if a:
             ground = groundplot.objects.get(locationId=tutorial_data["locationId"])
             tutorial_serializer = groundplotserializers(ground, data=tutorial_data)
-            if tutorial_serializer.is_valid():  # raise_exception=True
+            if tutorial_serializer.is_valid():
                 tutorial_serializer.save()
                 return JsonResponse(aa, status=status.HTTP_201_CREATED)
             return JsonResponse(
                 tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
-
-        # a = json.loads(json_util.dumps(tutorial_data))
         else:
             tutorial_serializer = groundplotserializers(data=tutorial_data)
             if tutorial_serializer.is_valid(raise_exception=True):
@@ -258,18 +216,16 @@ def cameraService_(request):
         a = cameraService.objects.filter(
             locationId=tutorial_data["locationId"]
         ).values()
-        aa = json.loads(json_util.dumps(tutorial_data))  # b = a[0]
+        aa = json.loads(json_util.dumps(tutorial_data))
         if a:
             camera = cameraService.objects.get(locationId=tutorial_data["locationId"])
             tutorial_serializer = cameraServiceserializers(camera, data=tutorial_data)
-            if tutorial_serializer.is_valid():  # raise_exception=True
+            if tutorial_serializer.is_valid():
                 tutorial_serializer.save()
                 return JsonResponse(aa, status=status.HTTP_201_CREATED)
             return JsonResponse(
                 tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
-
-        # a = json.loads(json_util.dumps(tutorial_data))
         else:
             tutorial_serializer = cameraServiceserializers(data=tutorial_data)
             if tutorial_serializer.is_valid(raise_exception=True):
@@ -286,18 +242,17 @@ def cameraInfo_(request):
     if request.method == "PUT":
         tutorial_data = JSONParser().parse(request)
         a = cameraInfo.objects.filter(locationId=tutorial_data["locationId"]).values()
-        aa = json.loads(json_util.dumps(tutorial_data))  # b = a[0]
+        aa = json.loads(json_util.dumps(tutorial_data))
         if a:
             camera = cameraInfo.objects.get(locationId=tutorial_data["locationId"])
             tutorial_serializer = cameraInfoserializers(camera, data=tutorial_data)
-            if tutorial_serializer.is_valid():  # raise_exception=True
+            if tutorial_serializer.is_valid():
                 tutorial_serializer.save()
                 return JsonResponse(aa, status=status.HTTP_201_CREATED)
             return JsonResponse(
                 tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST
             )
 
-        # a = json.loads(json_util.dumps(tutorial_data))
         else:
             tutorial_serializer = cameraInfoserializers(data=tutorial_data)
             if tutorial_serializer.is_valid(raise_exception=True):
@@ -315,7 +270,6 @@ def cartManager_(request):
         tutorial_data = JSONParser().parse(request)
         c = json.loads(json_util.dumps(tutorial_data))
         a = cartManager.objects.filter(locationId=tutorial_data["locationId"]).values()
-        # b = a[0]
         if a:
             location = cartManager.objects.get(locationId=tutorial_data["locationId"])
             tutorial_serializer = cartManagerserializers(location, data=tutorial_data)
@@ -327,7 +281,6 @@ def cartManager_(request):
             )
         else:
             tutorial_serializer = cartManagerserializers(data=tutorial_data)
-            # c = json.loads(json_util.dumps(tutorial_data))
             if tutorial_serializer.is_valid():
                 tutorial_serializer.save()
                 return JsonResponse(c, status=status.HTTP_201_CREATED)
