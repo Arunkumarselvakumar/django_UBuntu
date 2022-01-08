@@ -9,4 +9,6 @@ RUN mkdir /backend
 WORKDIR /backend
 COPY . /backend/
 RUN python3 -m pip install -r requirements.txt
+RUN python3 manage.py makemigrations
+RUN python3 manage.py migrate
 # ENTRYPOINT ["sh","/backend/run.sh"]

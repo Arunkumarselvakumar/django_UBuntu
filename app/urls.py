@@ -18,12 +18,15 @@ from django.urls import path, include
 from . import views
 
 
+
 urlpatterns = [
-    path("storefloorplan", views.storeFloorPlan_, name="storesetup"),
-    path("storefixtures", views.storeFixtures_, name="gandolaShelves"),
-    path("cameraService", views.cameraService_, name="cameraService"),
-    path("cameraInfo", views.cameraInfo_, name="camerainfo"),
-    path("groundplot", views.groundplot_, name="groundplot"),
-    path("cartManager", views.cartManager_, name="cartManager"),
-    path("all", views.all_, name="all"),
+   
+    path("mgondola", views.mgondola_, name="mgondola"),
+    path("fgondola", views.fgondola_, name="fgondola"),
+    path("locationsetup", views.locationSetup_, name="locationSetup"),
+    path("camera", views.cameraandGPU_, name="cameraandGPU"), 
+    path("cartmanager", views.cartManager_, name="cartManager"),
+    path("groundplot", views.groundplot_, name="groundplot"),  
+    path("turnstile", views.turnstile_, name="turnstile"),
+    path("storedimension", views.storeDimension_, name="storeDimension"),
 ]

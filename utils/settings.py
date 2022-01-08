@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 from pathlib import Path
 import os
-
+#import dns
+import environ
+# Initialise environment variables
+env = environ.Env()
+environ.Env.read_env()
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -20,12 +24,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "0r+*aq8(^-oi8nfi!$k1#)(s#c%k)73roy)el)qn&4)_^4bkvx"
+SECRET_KEY = env('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
 
 
 # Application definition
@@ -76,14 +80,14 @@ WSGI_APPLICATION = "utils.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
+#env('HOST')#
 DATABASES = {
     "default": {
         "ENGINE": "djongo",
-        "NAME": "finalteststore1",
+        "NAME":  env('DBNAME'),
         "ENFORCE_SCHEMA": False,
         "CLIENT": {
-            "host": "mongodb+srv://newuser2:newuser2@test1.svfzl.mongodb.net/express_store?ssl=true&ssl_cert_reqs=CERT_NONE&retryWrites=true&w=majority"
+            "host":env('HOST')# "mongodb+srv://newuser2:newuser2@test1.svfzl.mongodb.net/express_store?ssl=true&ssl_cert_reqs=CERT_NONE&retryWrites=true&w=majority"
         },
     }
 }
