@@ -24,9 +24,11 @@ urlpatterns = [
     path("mgondola", views.mgondola_, name="mgondola"),
     path("fgondola", views.fgondola_, name="fgondola"),
     path("locationsetup", views.locationSetup_, name="locationSetup"),
-    path("camera", views.cameraandGPU_, name="cameraandGPU"), 
+    path("cameraandgpu", views.cameraandGPU_, name="cameraandGPU"), 
     path("cartmanager", views.cartManager_, name="cartManager"),
     path("groundplot", views.groundplot_, name="groundplot"),  
     path("turnstile", views.turnstile_, name="turnstile"),
     path("storedimension", views.storeDimension_, name="storeDimension"),
+    path("camera", views.camera_, name="camera"),
+    
 ]

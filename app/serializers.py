@@ -6,7 +6,8 @@ from app.models import (
     groundplot,
     cartManager,
     turnstile,
-    storeDimension
+    storeDimension,
+    camera
 ) 
 
 class mgondolaserializers(serializers.ModelSerializer):
@@ -41,6 +42,10 @@ class storeDimensionserializers(serializers.ModelSerializer):
 class turnstileserializers(serializers.ModelSerializer):
     class Meta:
         model = turnstile
+        fields = "__all__"
+class cameraserializers(serializers.ModelSerializer):
+    class Meta:
+        model = camera
         fields = "__all__"
 """
 class storeFloorPlanserializers(serializers.ModelSerializer):

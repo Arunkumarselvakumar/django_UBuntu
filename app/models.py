@@ -4,6 +4,19 @@ class gondola(models.Model):
     locationId = models.CharField(max_length=100, unique=True, primary_key=True)
     gondola = models.ListField(blank=False)
 
+class camera(models.Model):
+    locationId = models.CharField(max_length=100, unique=True, primary_key=True)
+    camera = models.ListField(blank=False)
+    # serialNumber = models.CharField(max_length=100, blank=False, default="")
+    # cameraId = models.CharField(max_length=100, blank=False, default="")
+    # cameraType = models.CharField(max_length=100, blank=False, default="")
+    # cameraLocation = models.CharField(max_length=100, blank=True, default="")
+    # calibrationData = models.CharField(max_length=100, blank=True, default="")
+    # calibrationData_75 = models.CharField(max_length=100, blank=True, default="")
+    # calibrationLog = models.CharField(max_length=100, blank=True, default="")
+    # gpuIndex = models.IntegerField(blank=True)
+    # usbPort = models.IntegerField(blank=True)
+
 class turnstile(models.Model):
     locationId = models.CharField(max_length=100, unique=True, primary_key=True)
     turnstile = models.ListField(blank=False)

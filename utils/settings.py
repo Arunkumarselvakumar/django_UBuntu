@@ -81,16 +81,26 @@ WSGI_APPLICATION = "utils.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 #env('HOST')#
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "djongo",
+#         "NAME":  env('DBNAME'),
+#         "ENFORCE_SCHEMA": False,
+#         "CLIENT": {
+#             "host":env('HOST')# "mongodb+srv://newuser2:newuser2@test1.svfzl.mongodb.net/express_store?ssl=true&ssl_cert_reqs=CERT_NONE&retryWrites=true&w=majority"
+#         },
+#     }
+# }
+#offline db ends here
 DATABASES = {
-    "default": {
-        "ENGINE": "djongo",
-        "NAME":  env('DBNAME'),
-        "ENFORCE_SCHEMA": False,
-        "CLIENT": {
-            "host":env('HOST')# "mongodb+srv://newuser2:newuser2@test1.svfzl.mongodb.net/express_store?ssl=true&ssl_cert_reqs=CERT_NONE&retryWrites=true&w=majority"
-        },
-    }
-}
+    'default': {
+        'ENGINE': 'djongo',
+        'NAME': 'testfinalstore11',
+        'ENFORCE_SCHEMA': False,
+        'HOST': '127.0.0.1',
+        'PORT': 27017,
+    }}
+#offline db ends here
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

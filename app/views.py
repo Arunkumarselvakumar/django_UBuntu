@@ -10,7 +10,8 @@ from app.models import (
     groundplot,
     cartManager,
     turnstile,
-    storeDimension
+    storeDimension,
+    camera
 )
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
@@ -23,9 +24,83 @@ from app.serializers import (
     groundplotserializers,
     cartManagerserializers,
     turnstileserializers,
-    storeDimensionserializers 
+    storeDimensionserializers,
+    cameraserializers
 )
+##camera starts
+@csrf_exempt
+@api_view(["POST","PUT","GET"])
+def camera_(request):
+    user_data = JSONParser().parse(request)
+    #aa = json.loads(json_util.dumps(user_data))
+    
+    if request.method == 'PUT':
+        cameraId = user_data['cameraId']
+        location = camera.objects.get(locationId=user_data['locationId'])
+        gond = camera.objects.filter(locationId=user_data['locationId'])
+        aa = json.loads(json_util.dumps(gond.values()))
+        print(aa[0])
+        res1 = aa[0]['camera']
+        fb = next((item for item in res1 if item["cameraId"] == cameraId), None)
+        gon_dat = user_data
+        gon_dat.pop("locationId")
+        fb.update(gon_dat)
+        tutorial_serializer = cameraserializers(location, data=aa[0])
+        response = {
+            "status": "pass",
+            "data":aa[0]}
+        if tutorial_serializer.is_valid(): 
+            tutorial_serializer.save() 
+            return JsonResponse(response, status=status.HTTP_201_CREATED) 
+        return JsonResponse(tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    # this will come from CREATE Gondala page only mandatory data or all data for indivial gandola 
+    if request.method == "POST": 
+        gond = camera.objects.filter(locationId=user_data['locationId'])
+        if gond:
+            #turnstileId = user_data['turnstileId']
+            location = camera.objects.get(locationId=user_data['locationId'])
+            gond = camera.objects.filter(locationId=user_data['locationId'])
+            aa = json.loads(json_util.dumps(gond.values()))
+            #print(aa[0])
+            res1 = aa[0]['camera']
+            c = []
+            n = user_data["camera"][0]["cameraId"]
+            #print(n,type(n))
+            for i in range(0,len(aa[0]["camera"])):
+                c.append((aa[0]["camera"][i]["cameraId"]))
+            if n in c:
+                response = {
+                    "status": "error",
+                    "errortype" : "camera Id exits",
+                    "existing ids" : c
+                }
+                return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST )
+            else:
+                aa[0]["camera"].append(user_data["camera"][0])
 
+            tutorial_serializer = cameraserializers(location, data=aa[0])
+            if tutorial_serializer.is_valid():
+                tutorial_serializer.save()
+                return JsonResponse(
+                    tutorial_serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse(
+                tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            tutorial_serializer = cameraserializers(data=user_data)
+            if tutorial_serializer.is_valid():
+                tutorial_serializer.save()
+                return JsonResponse(
+                    tutorial_serializer.data, status=status.HTTP_201_CREATED)
+            return JsonResponse(
+                tutorial_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    #This will give ALL Gondola data 
+    if request.method == "GET": 
+        gond = camera.objects.filter(locationId=user_data['locationId'])
+        aa = json.loads(json_util.dumps(gond.values()))
+        return JsonResponse(aa[0], safe=False)
+
+##camera ends here
 @csrf_exempt
 @api_view(["POST","PUT","GET"])
 def storeDimension_(request):
