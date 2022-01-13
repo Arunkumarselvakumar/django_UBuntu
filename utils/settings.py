@@ -29,7 +29,7 @@ SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -81,25 +81,25 @@ WSGI_APPLICATION = "utils.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 #env('HOST')#
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "djongo",
-#         "NAME":  env('DBNAME'),
-#         "ENFORCE_SCHEMA": False,
-#         "CLIENT": {
-#             "host":env('HOST')# "mongodb+srv://newuser2:newuser2@test1.svfzl.mongodb.net/express_store?ssl=true&ssl_cert_reqs=CERT_NONE&retryWrites=true&w=majority"
-#         },
-#     }
-# }
-#offline db ends here
 DATABASES = {
-    'default': {
-        'ENGINE': 'djongo',
-        'NAME': 'testfinalstore11',
-        'ENFORCE_SCHEMA': False,
-        'HOST': '127.0.0.1',
-        'PORT': 27017,
-    }}
+    "default": {
+        "ENGINE": "djongo",
+        "NAME":  env('DBNAME'),
+        "ENFORCE_SCHEMA": False,
+        "CLIENT": {
+            "host":env('HOST')
+        },
+    }
+}
+#offline db ends here
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'djongo',
+#         'NAME': 'testfinalstore11',
+#         'ENFORCE_SCHEMA': False,
+#         'HOST': '127.0.0.1',
+#         'PORT': 27017,
+#     }}
 #offline db ends here
 
 # Password validation
