@@ -11,26 +11,27 @@ from app.models import (
     cartManager,
     turnstile,
     storeDimension,
-    camera
+    camera,
+    smartshelf
 )
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
 from rest_framework import status
 from app.serializers import (
-    mgondolaserializers,
-    fgondolaserializers,
+    gondolaserializers,
     locationSetupserializers,
     cameraandGPUserializers,
     groundplotserializers,
     cartManagerserializers,
     turnstileserializers,
     storeDimensionserializers,
-    cameraserializers
+    cameraserializers,
+    smartshelfserializers
 )
 
 ##camera starts
 @csrf_exempt
-@api_view(["POST","PUT","GET"])
+@api_view(["POST","PUT","GET","DELETE"])
 def camera_(request):
     user_data = JSONParser().parse(request)
     response = {}
@@ -56,7 +57,31 @@ def camera_(request):
             return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
         except:
             response["status"]="Failed"
-            response["data"]="User not found"
+            response["data"]="Camera ID not found"
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'DELETE':
+        try:
+            cameraId = user_data['cameraId']
+            location = camera.objects.get(locationId=user_data['locationId'])
+            gond = camera.objects.filter(locationId=user_data['locationId'])
+            aa = json.loads(json_util.dumps(gond.values()))
+            res1 = aa[0]['camera']
+            for i in range(len(res1)):
+                if res1[i].get('cameraId') == cameraId:
+                    del res1[i]
+                    break
+            tutorial_serializer = cameraserializers(location, data=aa[0])
+            if tutorial_serializer.is_valid(): 
+                tutorial_serializer.save()
+                response["status"]="pass"
+                response["data"]=aa[0] 
+                return JsonResponse(response, status=status.HTTP_200_OK) 
+            response["status"]="Failed"
+            response["data"]=tutorial_serializer.errors
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            response["status"]="Failed"
+            response["data"]="Camera ID not found"
             return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
     # this will come from CREATE Gondala page only mandatory data or all data for indivial gandola 
     if request.method == "POST": 
@@ -238,7 +263,7 @@ def storeDimension_(request):
                response, status=status.HTTP_400_BAD_REQUEST)
 
 @csrf_exempt
-@api_view(["POST","PUT","GET"])
+@api_view(["POST","PUT","GET","DELETE"])
 def turnstile_(request):
     response = {}
     user_data = JSONParser().parse(request) 
@@ -265,9 +290,36 @@ def turnstile_(request):
                 response, status=status.HTTP_400_BAD_REQUEST)
         except:
             response["status"]="Failed"
-            response["data"]="ID not found"
+            response["data"]="Turntile ID not found"
             return JsonResponse(
                 response, status=status.HTTP_400_BAD_REQUEST)
+    ##delete turntile by id
+    if request.method == 'DELETE':
+        try:
+            turnstileId = user_data['turnstileId']
+            location = turnstile.objects.get(locationId=user_data['locationId'])
+            gond = turnstile.objects.filter(locationId=user_data['locationId'])
+            aa = json.loads(json_util.dumps(gond.values()))
+            res1 = aa[0]['turnstile']
+            print("1111",res1)
+            for i in range(len(res1)):
+                if res1[i].get('turnstileId') == turnstileId:
+                    del res1[i]
+                    break
+            tutorial_serializer = turnstileserializers(location, data=aa[0])
+            if tutorial_serializer.is_valid(): 
+                tutorial_serializer.save()
+                response["status"]="pass"
+                response["data"]=aa[0] 
+                return JsonResponse(response, status=status.HTTP_200_OK) 
+            response["status"]="Failed"
+            response["data"]=tutorial_serializer.errors
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            response["status"]="Failed"
+            response["data"]="Turntile ID not found"
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+    # end of delete
     # this will come from CREATE Gondala page only mandatory data or all data for indivial gandola 
     if request.method == "POST": 
         gond = turnstile.objects.filter(locationId=user_data['locationId'])
@@ -383,7 +435,7 @@ def turnstile_filters(request):
             return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)       
 #turnstile filters ends here
 @csrf_exempt
-@api_view(["POST","PUT","GET"])
+@api_view(["POST","GET"])
 def cartManager_(request):
     response = {}
     user_data = JSONParser().parse(request)
@@ -589,7 +641,7 @@ def mgondola_(request):
                 return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST )
             else:
                 aa[0]["gondola"].append(user_data["gondola"][0])
-            tutorial_serializer = mgondolaserializers(location, data=aa[0])
+            tutorial_serializer = gondolaserializers(location, data=aa[0])
             if tutorial_serializer.is_valid():
                 tutorial_serializer.save()
                 response["status"]="pass"
@@ -600,7 +652,7 @@ def mgondola_(request):
             return JsonResponse(
                response, status=status.HTTP_400_BAD_REQUEST)
         else:
-            tutorial_serializer = mgondolaserializers(data=user_data)
+            tutorial_serializer = gondolaserializers(data=user_data)
             if tutorial_serializer.is_valid():
                 tutorial_serializer.save()
                 response["status"]="pass"
@@ -690,7 +742,7 @@ def mgondolafilters(request):
 #mgondolafilters ends here
 #fgondola starts here 
 @csrf_exempt
-@api_view(["GET","PUT"])
+@api_view(["GET","PUT","DELETE"])
 def fgondola_(request):
     response = {}
     user_data = JSONParser().parse(request)
@@ -698,8 +750,9 @@ def fgondola_(request):
     gondolaId = user_data['gondolaId']
     aa = json.loads(json_util.dumps(gond.values()))
      # This we are going to send Gondola id wise data 
-    try:      
-        if request.method == 'GET':
+         
+    if request.method == 'GET':
+        try:
             res1 = aa[0]['gondola']
             fb = next((item for item in res1 if item["gondolaId"] == gondolaId), None)
             if fb:
@@ -708,12 +761,12 @@ def fgondola_(request):
                 return JsonResponse(response,status=status.HTTP_200_OK)
             else:
                 response["status"]="Failed"
-                response["data"]="Id not Found"
+                response["data"]="Gondola Id not Found"
                 return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)
-    except:
-        response["status"]="Failed"
-        response["data"]="Id not Found"
-        return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)
+        except:
+            response["status"]="Failed"
+            response["data"]="Gondola Id not Found"
+            return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)
 
     # this will update Gandola id wise data
     if request.method == 'PUT':
@@ -724,7 +777,7 @@ def fgondola_(request):
             gon_dat = user_data
             gon_dat.pop("locationId")
             fb.update(gon_dat)
-            tutorial_serializer = fgondolaserializers(location, data=aa[0])
+            tutorial_serializer = gondolaserializers(location, data=aa[0])
             if tutorial_serializer.is_valid(): 
                 tutorial_serializer.save()
                 response["status"]="pass"
@@ -736,7 +789,219 @@ def fgondola_(request):
                 response, status=status.HTTP_400_BAD_REQUEST)
         except:
             response["status"]="Failed"
-            response["data"]= "Id not found"
+            response["data"]= "Gondola Id not found"
+            return JsonResponse(
+                response, status=status.HTTP_400_BAD_REQUEST)
+    
+    if request.method == 'DELETE':
+        try:
+            location = gondola.objects.get(locationId=user_data['locationId'])
+            res1 = aa[0]['gondola']
+            for i in range(len(res1)):
+                if res1[i].get('gondolaId') == gondolaId:
+                    del res1[i]
+                    break
+            tutorial_serializer = gondolaserializers(location, data=aa[0])
+            if tutorial_serializer.is_valid(): 
+                tutorial_serializer.save()
+                response["status"]="pass"
+                response["data"]=aa[0]
+                return JsonResponse(response,status=status.HTTP_200_OK) 
+            response["status"]="Failed"
+            response["data"]=tutorial_serializer.errors
+            return JsonResponse(
+                response, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            response["status"]="Failed"
+            response["data"]= "Gondola Id not found"
             return JsonResponse(
                 response, status=status.HTTP_400_BAD_REQUEST)
 #fgondola ends here
+#digitshelf starts here
+@csrf_exempt
+@api_view(["POST","PUT","GET","DELETE"])
+def smartshelf_(request):
+    user_data = JSONParser().parse(request)
+    response = {}
+    if request.method == 'PUT':
+        try:
+            shelfId = user_data['shelfId']
+            location = smartshelf.objects.get(locationId=user_data['locationId'])
+            gond = smartshelf.objects.filter(locationId=user_data['locationId'])
+            aa = json.loads(json_util.dumps(gond.values()))
+            res1 = aa[0]['digitshelf']
+            fb = next((item for item in res1 if item["shelfId"] == shelfId), None)
+            gon_dat = user_data
+            gon_dat.pop("locationId")
+            fb.update(gon_dat)
+            tutorial_serializer = smartshelfserializers(location, data=aa[0])
+            if tutorial_serializer.is_valid(): 
+                tutorial_serializer.save()
+                response["status"]="pass"
+                response["data"]=aa[0] 
+                return JsonResponse(response, status=status.HTTP_201_CREATED) 
+            response["status"]="Failed"
+            response["data"]=tutorial_serializer.errors
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            response["status"]="Failed"
+            response["data"]="sheld ID not found"
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'DELETE':
+        try:
+            shelfId = user_data['shelfId']
+            location = smartshelf.objects.get(locationId=user_data['locationId'])
+            gond = smartshelf.objects.filter(locationId=user_data['locationId'])
+            aa = json.loads(json_util.dumps(gond.values()))
+            res1 = aa[0]['digitshelf']
+            for i in range(len(res1)):
+                if res1[i].get('shelfId') == shelfId:
+                    del res1[i]
+                    break
+            tutorial_serializer = smartshelfserializers(location, data=aa[0])
+            if tutorial_serializer.is_valid(): 
+                tutorial_serializer.save()
+                response["status"]="pass"
+                response["data"]=aa[0] 
+                return JsonResponse(response, status=status.HTTP_200_OK) 
+            response["status"]="Failed"
+            response["data"]=tutorial_serializer.errors
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+        except:
+            response["status"]="Failed"
+            response["data"]="shelf ID not found"
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+    # this will come from CREATE Gondala page only mandatory data or all data for indivial gandola 
+    if request.method == "POST": 
+        gond = smartshelf.objects.filter(locationId=user_data['locationId'])
+        if gond:
+            location = smartshelf.objects.get(locationId=user_data['locationId'])
+            gond = smartshelf.objects.filter(locationId=user_data['locationId'])
+            aa = json.loads(json_util.dumps(gond.values()))
+            res1 = aa[0]['digitshelf']
+            c = []
+            n = user_data["digitshelf"][0]["shelfId"]
+            for i in range(0,len(aa[0]["digitshelf"])):
+                c.append((aa[0]["digitshelf"][i]["shelfId"]))
+            if n in c:
+                response["status"]="Failed"
+                response["data"]="shelfId exits"
+                return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)
+            else:
+                aa[0]["digitshelf"].append(user_data["digitshelf"][0])
+
+            tutorial_serializer = smartshelfserializers(location, data=aa[0])
+            if tutorial_serializer.is_valid():
+                tutorial_serializer.save()
+                response["status"]="pass"
+                response["data"]=tutorial_serializer.data
+                return JsonResponse(
+                    response, status=status.HTTP_201_CREATED)
+            response["status"]="Failed"
+            response["data"]=tutorial_serializer.errors
+            return JsonResponse(
+                response, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            tutorial_serializer = smartshelfserializers(data=user_data)
+            if tutorial_serializer.is_valid():
+                tutorial_serializer.save()
+                response["status"]="pass"
+                response["data"]=tutorial_serializer.data
+                return JsonResponse(
+                    response, status=status.HTTP_201_CREATED)
+            response["status"]="Failed"
+            response["data"]=tutorial_serializer.errors
+            return JsonResponse(
+                response, status=status.HTTP_400_BAD_REQUEST)
+
+    #This will give ALL Gondola data 
+    if request.method == "GET": 
+        try:
+            pagenumber=int(request.GET.get('pagenumber',None))
+            itemcount=int(request.GET.get('itemcount',None))
+            gond = smartshelf.objects.filter(locationId=user_data['locationId'])
+            if gond:
+                aa = json.loads(json_util.dumps(gond.values()))
+                aa[0].update({"digitshelf":sorted(aa[0]["digitshelf"], key=lambda d: int(d["shelfId"]))})
+                ic = pagenumber*itemcount
+                startobj = (ic)-itemcount
+                aa[0]["digitshelf"]=aa[0]["digitshelf"][startobj:ic]
+                response["status"]="pass"
+                response["data"]=aa[0]
+                return JsonResponse(response,status=status.HTTP_200_OK)
+            else:
+                response["status"]="Failed"
+                response["data"]="Data not Found"
+                return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+        except TypeError as e:
+            response["status"]="Failed"
+            response["data"]="Data not Found"
+            return JsonResponse(response, status=status.HTTP_400_BAD_REQUEST)
+
+##camera ends here
+##camerafilter starts here
+@csrf_exempt
+@api_view(["GET"])
+def shelf_filters(request):
+    response = {}
+    user_data = JSONParser().parse(request)
+    if request.method == "GET":
+        try:
+            gond = smartshelf.objects.filter(locationId=user_data['locationId'])
+            shelfId=request.GET.get('shelfId',None)
+            shelfLocation=request.GET.get('shelfLocation',None)
+            shelfMAC=request.GET.get('shelfMAC',None)
+            shelfTopic=request.GET.get('shelfTopic',None)
+            gondolaID=request.GET.get('gondolaID',None)
+            gondolaCoordinates=request.GET.get('gondolaCoordinates',None)
+            gondolaDimensions=request.GET.get('gondolaDimensions',None)
+            statuss=request.GET.get('status',None)
+            batterCapacity=request.GET.get('batterCapacity',None)
+            def filters(gond,keys,values):
+                if gond:
+                    aa = json.loads(json_util.dumps(gond.values()))
+                    res1 = aa[0]["digitshelf"]
+                    z = []
+                    for a in res1:
+                        for k,v in a.items():
+                            v = str(v)
+                            values=str(values)
+                            if k == keys:
+                                if values in v:
+                                    z.append(a)
+                    g = ({"digitshelf":sorted(z, key=lambda d: int(d["shelfId"]))})       
+                    response["status"] = "pass"
+                    response["data"] = g
+                    return JsonResponse(response, status=status.HTTP_200_OK)
+                    
+                else:
+                    response["status"]="Failed"
+                    response["data"]="Data not Found"
+                    return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)
+            if shelfId:
+                return filters(gond,"shelfId",shelfId)
+            if shelfLocation:
+                return filters(gond,"shelfLocation",shelfLocation)
+            if shelfMAC:
+                return filters(gond,"shelfMAC",shelfMAC)
+            if shelfTopic:
+                return filters(gond,"shelfTopic",shelfTopic)
+            if gondolaID:
+                return filters(gond,"gondolaID",gondolaID)
+            if gondolaCoordinates:
+                return filters(gond,"gondolaCoordinates",gondolaCoordinates)
+            if gondolaDimensions:
+                return filters(gond,"gondolaDimensions",gondolaDimensions)
+            if statuss:
+                return filters(gond,"status",str(statuss))
+            if batterCapacity:
+                return filters(gond,"batterCapacity",str(batterCapacity))
+            else:
+                response["status"]="Failed"
+                response["data"]="Data not Found"
+                return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)
+        except TypeError as e:
+            response["status"]="Failed"
+            response["data"]="Data not Found"
+            return JsonResponse(response,status=status.HTTP_400_BAD_REQUEST)       
+##digitshelf  ends here

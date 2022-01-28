@@ -32,5 +32,8 @@ urlpatterns = [
     path("turnstile", views.turnstile_, name="turnstile"),
     path("turnstilefilters", views.turnstile_filters, name="turnstile_filters"),
     path("camerafilters", views.camera_filters, name="camera_filters"),
-    path("mgondolafilters", views.mgondolafilters, name="mgondolafilters")
+    path("mgondolafilters", views.mgondolafilters, name="mgondolafilters"),
+    path("smartshelf", views.smartshelf_, name="smartshelf"),
+    path("smartshelffilters", views.shelf_filters, name="smartshelf_filters")
+
 ]

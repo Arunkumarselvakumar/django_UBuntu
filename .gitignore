@@ -52,3 +52,4 @@ Thumbs.db
 static
 
 pydantic.py
+.env

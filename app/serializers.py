@@ -7,15 +7,15 @@ from app.models import (
     cartManager,
     turnstile,
     storeDimension,
-    camera
+    camera,
+    smartshelf
 ) 
-
-class mgondolaserializers(serializers.ModelSerializer):
+class smartshelfserializers(serializers.ModelSerializer):
     class Meta:
-        model = gondola
-        fields = "__all__"#("locationId","gondolaID","gondolaDimension","shelfCount")
+        model = smartshelf
+        fields = "__all__"
 
-class fgondolaserializers(serializers.ModelSerializer):
+class gondolaserializers(serializers.ModelSerializer):
     class Meta:
         model = gondola
         fields = "__all__"
@@ -47,32 +47,3 @@ class cameraserializers(serializers.ModelSerializer):
     class Meta:
         model = camera
         fields = "__all__"
-"""
-class storeFloorPlanserializers(serializers.ModelSerializer):
-    class Meta:
-        model = storeFloorPlan
-        fields = "__all__"
-
-class cameraServiceserializers(serializers.ModelSerializer):
-    class Meta:
-        model = cameraService
-        fields = "__all__"
-
-
-class cameraInfoserializers(serializers.ModelSerializer):
-    class Meta:
-        model = cameraInfo
-        fields = "__all__"
-
-
-class groundplotserializers(serializers.ModelSerializer):
-    class Meta:
-        model = groundplot
-        fields = "__all__"
-
-
-class cartManagerserializers(serializers.ModelSerializer):
-    class Meta:
-        model = cartManager
-        fields = "__all__"
-"""
